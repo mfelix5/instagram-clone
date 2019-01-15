@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, StyleSheet, Text, View, Image } from 'react-native';
+import { TouchableOpacity, FlatList, StyleSheet, Text, View, Image } from 'react-native';
 import { f, auth, database, storage } from '../../config/config';
 
 export default class feed extends React.Component {
@@ -21,22 +21,22 @@ export default class feed extends React.Component {
         var seconds = Math.floor((new Date() - a) / 1000);
         
         var interval = Math.floor(seconds / 31536000); // how many years ago
-        if (interval > 1) {
+        if (interval >= 1) {
             return interval + ' year' + this.pluralCheck(interval);
         }
         
         interval = Math.floor(seconds / 2592000); // how many months ago
-        if (interval > 1) {
+        if (interval >= 1) {
             return interval + ' month' + this.pluralCheck(interval);
         }
 
         interval = Math.floor(seconds / 86400); // how many days ago
-        if (interval > 1) {
+        if (interval >= 1) {
             return interval + ' day' + this.pluralCheck(interval);
         }
 
         interval = Math.floor(seconds / 3600); // how many hours ago
-        if (interval > 1) {
+        if (interval >= 1) {
             return interval + ' hour' + this.pluralCheck(interval);
         }
 
@@ -78,7 +78,8 @@ export default class feed extends React.Component {
                         url: photoObj.url,
                         caption: photoObj.caption,
                         posted: that.timeConverter(photoObj.posted),
-                        author: data
+                        author: data,
+                        authorID: photoObj.author
                     });
 
                     that.setState({
@@ -115,7 +116,10 @@ export default class feed extends React.Component {
                     <View key={index} style={{ width: "100%", overflow: "hidden", marginBottom: 5, justifyContent: "space-between", borderBottomWidth: 1, borderColor: "grey" }}>
                     <View style={{ padding: 5, width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
                       <Text>{item.posted}</Text>
-                      <Text>{item.author}</Text>
+                      <TouchableOpacity
+                        onPress = { () => this.props.navigation.navigate('User', {userID: item.authorID})}>
+                        <Text>{item.author}</Text>
+                    </TouchableOpacity>
                     </View>
                     <View>
                       <Image source={{ uri: item.url }} style={{ resizeMode: "cover", width: "100%", height: 275 }} />
