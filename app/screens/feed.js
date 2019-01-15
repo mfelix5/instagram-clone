@@ -70,7 +70,7 @@ export default class feed extends React.Component {
 
             for (var photo in data) {
                 var photoObj = data[photo];
-                database.ref('users').child(photoObj.author).once('value').then(function (snapshot) {
+                database.ref('users').child(photoObj.author).child('username').once('value').then(function (snapshot) {
                     const exists = (snapshot.val() !== null);
                     if (exists) data = snapshot.val();
                     photo_feed.push({
@@ -78,7 +78,7 @@ export default class feed extends React.Component {
                         url: photoObj.url,
                         caption: photoObj.caption,
                         posted: that.timeConverter(photoObj.posted),
-                        author: data.username
+                        author: data
                     });
 
                     that.setState({
@@ -112,7 +112,6 @@ export default class feed extends React.Component {
                 keyExtractor={(item, index) => index.toString()} 
                 style={{ flex: 1, backgroundColor: "#eee" }} 
                 renderItem={({ item, index }) => 
-                
                     <View key={index} style={{ width: "100%", overflow: "hidden", marginBottom: 5, justifyContent: "space-between", borderBottomWidth: 1, borderColor: "grey" }}>
                     <View style={{ padding: 5, width: "100%", flexDirection: "row", justifyContent: "space-between" }}>
                       <Text>{item.posted}</Text>
@@ -123,9 +122,7 @@ export default class feed extends React.Component {
                     </View>
                     <View style={{ padding: 5 }}>
                       <Text>{item.caption}</Text>
-                      <Text
-                        style={{ marginTop: 10, textAlign: "center" }}
-                      >
+                      <Text style={{ marginTop: 10, textAlign: "center" }}>
                         View comments...
                       </Text>
                     </View>

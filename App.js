@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from 'react-navigation';
 import feed from './app/screens/feed';
 import upload from './app/screens/upload';
 import profile from './app/screens/profile';
-
+import { f, auth, database, storage } from "./config/config";
 
 const MainStack = createBottomTabNavigator(
   {
@@ -15,6 +15,20 @@ const MainStack = createBottomTabNavigator(
 );
 
 export default class App extends React.Component {
+  login = async() => {
+    //force user to login
+    try {
+      let user = await auth.signInWithEmailAndPassword('test@gmail.com', 'password');
+
+    } catch(error) {
+      console.log(error);
+    }
+  }
+
+  constructor(props) {
+    super(props);
+    this.login();
+  }
   render() {
     return (
       <MainStack />
