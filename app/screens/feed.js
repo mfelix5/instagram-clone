@@ -55,6 +55,30 @@ export default class feed extends React.Component {
         }
     }
 
+    addToFlatList = (photo_feed, data, photo) => {
+        var that = this;
+        var photoObj = data[photo];
+        database.ref('users').child(photoObj.author).child('username').once('value').then(function (snapshot) {
+            const exists = (snapshot.val() !== null);
+            if (exists) data = snapshot.val();
+            photo_feed.push({
+                id: photo,
+                url: photoObj.url,
+                caption: photoObj.caption,
+                posted: that.timeConverter(photoObj.posted),
+                author: data,
+                authorID: photoObj.author
+            });
+            console.log(photo_feed)
+
+
+            that.setState({
+                refresh: false,
+                loading: false
+            });
+        }).catch(error => console.log(error));
+    }
+
     loadFeed = () => {
         this.setState({
             refresh: true,
@@ -65,31 +89,13 @@ export default class feed extends React.Component {
 
         database.ref('photos').orderByChild('posted').once('value').then(function (snapshot) {
             const exists = (snapshot.val() !== null);
-            if (exists) data = snapshot.val();
-            var photo_feed = that.state.photo_feed;
+                if (exists) data = snapshot.val();
+                var photo_feed = that.state.photo_feed;
 
-            for (var photo in data) {
-                var photoObj = data[photo];
-                database.ref('users').child(photoObj.author).child('username').once('value').then(function (snapshot) {
-                    const exists = (snapshot.val() !== null);
-                    if (exists) data = snapshot.val();
-                    photo_feed.push({
-                        id: photo,
-                        url: photoObj.url,
-                        caption: photoObj.caption,
-                        posted: that.timeConverter(photoObj.posted),
-                        author: data,
-                        authorID: photoObj.author
-                    });
-
-                    that.setState({
-                        refresh: false,
-                        loading: false
-                    });
-
-                }).catch(error => console.log(error));
-            }
-        }).catch(error => console.log(error));
+                for (var photo in data) {
+                    that.addToFlatList(photo_feed, data, photo)
+                }
+            }).catch(error => console.log(error));
     }
 
     loadNew = () => {
@@ -126,9 +132,13 @@ export default class feed extends React.Component {
                     </View>
                     <View style={{ padding: 5 }}>
                       <Text>{item.caption}</Text>
-                      <Text style={{ marginTop: 10, textAlign: "center" }}>
+                      <TouchableOpacity
+                         onPress={ () => this.props.navigation.navigate('Comments', {userID: item.id}) }
+                                                            >
+                      <Text style={{ color: 'blue', marginTop: 10, textAlign: "center" }}>
                         View comments...
                       </Text>
+                      </TouchableOpacity>
                     </View>
                   </View>} />}
           </View>;
