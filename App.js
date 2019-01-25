@@ -1,21 +1,21 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
-import { f, auth, database, storage } from "./config/config";
+import { createStackNavigator, createBottomTabNavigator, createAppContainer } from 'react-navigation';
+import { f, auth, database, storage } from './config/config.js';
 
-import feed from "./app/screens/feed";
-import upload from "./app/screens/upload";
-import profile from "./app/screens/profile";
-import comments from "./app/screens/comments";
-import userProfile from "./app/screens/userProfile";
+import feed from './app/screens/feed.js';
+import upload from './app/screens/upload.js';
+import profile from './app/screens/profile.js';
+import userProfile from './app/screens/userProfile.js';
+import comments from './app/screens/comments.js';
 
 const TabStack = createBottomTabNavigator(
   {
     Feed: { screen: feed },
-    Upload: { screen: upload },
-    Profile: { screen: profile }
+    Upload: {screen: upload },
+    Profile: {screen: profile }
   }
-);
+)
 
 const MainStack = createStackNavigator(
   {
@@ -24,30 +24,22 @@ const MainStack = createStackNavigator(
     Comments: { screen: comments }
   },
   {
-    initialRouteName: 'Home',
+    initalRouteName: 'Home',
     mode: 'modal',
     headerMode: 'none',
   }
 )
 
+const AppContainer = createAppContainer(MainStack);
+
 export default class App extends React.Component {
-  login = async() => {
-    //force user to login
-    try {
-      let user = await auth.signInWithEmailAndPassword('test@gmail.com', 'password');
 
-    } catch(error) {
-      console.log(error);
-    }
-  }
-
-  constructor(props) {
+  constructor(props){
     super(props);
-    this.login();
   }
   render() {
     return (
-      <MainStack />
+      <AppContainer />
     );
   }
 }
